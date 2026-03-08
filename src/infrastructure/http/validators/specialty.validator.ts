@@ -15,6 +15,8 @@ export const listSpecialtiesQuerySchema = z.object({
     .optional()
     .transform(v => (v === undefined ? undefined : v === "true")),
   q: z.string().trim().min(1).max(100).optional(),
+  page: z.coerce.number().int().positive().optional().default(1),
+  limit: z.coerce.number().int().positive().max(100).optional().default(10),
 });
 
 export const updateSpecialtySchema = z

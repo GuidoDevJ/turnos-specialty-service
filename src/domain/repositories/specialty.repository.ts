@@ -1,4 +1,4 @@
-import { Specialty } from "../entities/specialty.entity";
+import { Specialty, PaginatedResult } from "../entities/specialty.entity";
 
 export type CreateSpecialtyInput = {
   name: string;
@@ -14,10 +14,12 @@ export type UpdateSpecialtyInput = {
 export type ListSpecialtiesQuery = {
   isActive?: boolean;
   q?: string;
+  page?: number;
+  limit?: number;
 };
 
 export interface ISpecialtyRepository {
-  list(query?: ListSpecialtiesQuery): Promise<Specialty[]>;
+  list(query?: ListSpecialtiesQuery): Promise<PaginatedResult<Specialty>>;
   getById(id: number): Promise<Specialty | null>;
   create(input: CreateSpecialtyInput): Promise<Specialty>;
   update(id: number, input: UpdateSpecialtyInput): Promise<Specialty>;

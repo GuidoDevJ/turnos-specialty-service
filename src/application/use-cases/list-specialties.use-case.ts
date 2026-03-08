@@ -1,5 +1,5 @@
 import { ISpecialtyRepository, ListSpecialtiesQuery } from "../../domain/repositories/specialty.repository";
-import { Specialty } from "../../domain/entities/specialty.entity";
+import { Specialty, PaginatedResult } from "../../domain/entities/specialty.entity";
 
 
 /**
@@ -13,7 +13,7 @@ export class ListSpecialtiesUseCase {
    * @param query - Query parameters for filtering specialties
    * @returns List of specialties
    */
-  async execute(query?: ListSpecialtiesQuery): Promise<Specialty[]> {
+  async execute(query?: ListSpecialtiesQuery): Promise<PaginatedResult<Specialty>> {
     return this.specialtyRepository.list(query);
   }
 }

@@ -30,6 +30,20 @@ export const swaggerSpec = swaggerJSDoc({
           },
           required: ["id", "name", "isActive", "createdAt", "updatedAt"],
         },
+        PaginatedSpecialtyResult: {
+          type: "object",
+          properties: {
+            data: {
+              type: "array",
+              items: { $ref: "#/components/schemas/Specialty" },
+            },
+            total: { type: "integer" },
+            page: { type: "integer" },
+            limit: { type: "integer" },
+            totalPages: { type: "integer" },
+          },
+          required: ["data", "total", "page", "limit", "totalPages"],
+        },
       },
     },
   },

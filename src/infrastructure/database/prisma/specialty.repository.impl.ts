@@ -6,7 +6,7 @@ import {
   ListSpecialtiesQuery,
 } from "../../../domain/repositories/specialty.repository";
 
-import { Specialty } from "../../../domain/entities/specialty.entity";
+import { Specialty, PaginatedResult } from "../../../domain/entities/specialty.entity";
 
 /**
  * Prisma-based implementation of the ISpecialtyRepository port.
@@ -14,22 +14,41 @@ import { Specialty } from "../../../domain/entities/specialty.entity";
  */
 export class PrismaSpecialtyRepository implements ISpecialtyRepository {
   /** @inheritdoc */
-  async list(query?: ListSpecialtiesQuery): Promise<Specialty[]> {
+  async list(query?: ListSpecialtiesQuery): Promise<PaginatedResult<Specialty>> {
     const q = query?.q?.trim();
-    return prismaClient.specialty.findMany({
-      where: {
-        ...(typeof query?.isActive === "boolean" ? { isActive: query.isActive } : {}),
-        ...(q
-          ? {
-              OR: [
-                { name: { contains: q, mode: "insensitive" } },
-                { description: { contains: q, mode: "insensitive" } },
-              ],
-            }
-          : {}),
-      },
-      orderBy: { name: "asc" },
-    });
+    const page = query?.page ?? 1;
+    const limit = query?.limit ?? 10;
+    const skip = (page - 1) * limit;
+
+    const where = {
+      ...(typeof query?.isActive === "boolean" ? { isActive: query.isActive } : {}),
+      ...(q
+        ? {
+            OR: [
+              { name: { contains: q, mode: "insensitive" as const } },
+              { description: { contains: q, mode: "insensitive" as const } },
+            ],
+          }
+        : {}),
+    };
+
+    const [total, data] = await prismaClient.$transaction([
+      prismaClient.specialty.count({ where }),
+      prismaClient.specialty.findMany({
+        where,
+        orderBy: { name: "asc" },
+        skip,
+        take: limit,
+      }),
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit) || 1,
+    };
   }
 
   /** @inheritdoc */

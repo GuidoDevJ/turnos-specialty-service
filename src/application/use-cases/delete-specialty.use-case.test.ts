@@ -7,7 +7,13 @@ import { ISpecialtyRepository } from "../../domain/repositories/specialty.reposi
 
 function buildRepoMock(): ISpecialtyRepository {
   return {
-    list: async () => [],
+    list: async () => ({
+      data: [],
+      total: 0,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+    }),
     getById: async () => null,
     create: async (input) => ({
       id: 1,
