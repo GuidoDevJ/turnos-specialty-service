@@ -8,3 +8,4 @@ firebase-service-account.json
 AGENTS.MD
 API.md
 .claude
+.vscode/launch.json

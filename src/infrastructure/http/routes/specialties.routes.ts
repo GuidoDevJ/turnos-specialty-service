@@ -43,6 +43,24 @@ export const createSpecialtiesRouter = (controller: SpecialtiesController) => {
 
   /**
  * @openapi
+ * /api/specialties/{id}:
+ *   get:
+ *     summary: Get specialty by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: OK
+ *       404:
+ *         description: Not found
+ */
+  router.get("/:id", validate(specialtyIdParamsSchema, "params"), controller.getById);
+
+  /**
+ * @openapi
  * /api/specialties:
  *   post:
  *     summary: Create specialty
@@ -64,15 +82,65 @@ export const createSpecialtiesRouter = (controller: SpecialtiesController) => {
  *       409:
  *         description: Duplicate name
  */
-router.post("/", firebaseAuth, validate(createSpecialtySchema, "body"), controller.create);
-router.put("/:id", firebaseAuth, validate(specialtyIdParamsSchema, "params"), validate(updateSpecialtySchema, "body"), controller.update);
-router.delete("/:id", firebaseAuth, validate(specialtyIdParamsSchema, "params"), controller.deactivate);
+  router.post("/", firebaseAuth, validate(createSpecialtySchema, "body"), controller.create);
 
-// router.post("/", validate(createSpecialtySchema, "body"), controller.create);
+  /**
+ * @openapi
+ * /api/specialties/{id}:
+ *   put:
+ *     summary: Update specialty
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: string }
+ *               description: { type: string, nullable: true }
+ *               isActive: { type: boolean }
+ *     responses:
+ *       200:
+ *         description: OK
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Not found
+ */
+  router.put(
+    "/:id",
+    firebaseAuth,
+    validate(specialtyIdParamsSchema, "params"),
+    validate(updateSpecialtySchema, "body"),
+    controller.update
+  );
 
-  // router.get("/:id", validate(specialtyIdParamsSchema, "params"), controller.getById);
-  // router.put("/:id", validate(specialtyIdParamsSchema, "params"), validate(updateSpecialtySchema, "body"), controller.update);
-  // router.delete("/:id", validate(specialtyIdParamsSchema, "params"), controller.deactivate);
+  /**
+ * @openapi
+ * /api/specialties/{id}:
+ *   delete:
+ *     summary: Soft delete specialty
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: OK
+ *       404:
+ *         description: Not found
+ */
+  router.delete("/:id", firebaseAuth, validate(specialtyIdParamsSchema, "params"), controller.delete);
 
   return router;
 };
