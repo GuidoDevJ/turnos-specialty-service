@@ -57,8 +57,8 @@ export class SpecialtiesController {
   delete = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = (req.validated?.params ?? req.params) as any;
-      const deleted = await this.deleteSpecialty.execute(Number(id));
-      res.json({ status: "success", data: deleted });
+      await this.deleteSpecialty.execute(Number(id));
+      res.status(204).send();
     } catch (err) {
       next(err);
     }

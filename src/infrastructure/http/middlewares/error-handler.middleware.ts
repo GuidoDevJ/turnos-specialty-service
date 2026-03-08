@@ -6,6 +6,12 @@ type ValidationError = {
   issues: Array<{ path: (string | number)[]; message: string }>;
 };
 
+type UpstreamError = {
+  kind: "upstream";
+  message?: string;
+  details?: unknown;
+};
+
 type PrismaLikeError = { code?: string; meta?: any; message?: string };
 
 export function errorHandler(err: unknown, _req: Request, res: Response, _next: NextFunction) {
@@ -55,6 +61,29 @@ if (typeof err === "object" && err !== null && (err as any).kind === "auth") {
     error: { code: "UNAUTHORIZED", message: (err as any).message ?? "Unauthorized" },
   });
 }
+
+  // Upstream dependency errors (external service)
+  if (typeof err === "object" && err !== null && (err as any).kind === "upstream") {
+    const upstream = err as UpstreamError;
+    return res.status(502).json({
+      status: "error",
+      error: {
+        code: "BAD_GATEWAY",
+        message: upstream.message ?? "Upstream service error",
+      },
+      details: upstream.details,
+    });
+  }
+
+  if ((err as any)?.code === "BAD_GATEWAY") {
+    return res.status(502).json({
+      status: "error",
+      error: {
+        code: "BAD_GATEWAY",
+        message: (err as any)?.message ?? "Upstream service error",
+      },
+    });
+  }
   // Fallback
   console.error(err);
 

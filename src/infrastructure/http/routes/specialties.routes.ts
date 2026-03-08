@@ -58,6 +58,8 @@ export const createSpecialtiesRouter = (controller: SpecialtiesController) => {
  *     responses:
  *       200:
  *         description: OK
+ *       502:
+ *         description: Bad Gateway
  *       404:
  *         description: Not found
  */
@@ -85,6 +87,8 @@ export const createSpecialtiesRouter = (controller: SpecialtiesController) => {
  *         description: Created
  *       409:
  *         description: Duplicate name
+ *       502:
+ *         description: Bad Gateway
  */
   router.post("/", firebaseAuth, validate(createSpecialtySchema, "body"), controller.create);
 
@@ -117,6 +121,8 @@ export const createSpecialtiesRouter = (controller: SpecialtiesController) => {
  *         description: Validation error
  *       404:
  *         description: Not found
+ *       502:
+ *         description: Bad Gateway
  */
   router.put(
     "/:id",
@@ -139,10 +145,12 @@ export const createSpecialtiesRouter = (controller: SpecialtiesController) => {
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200:
- *         description: OK
+ *       204:
+ *         description: No Content
  *       404:
  *         description: Not found
+ *       502:
+ *         description: Bad Gateway
  */
   router.delete("/:id", firebaseAuth, validate(specialtyIdParamsSchema, "params"), controller.delete);
 
